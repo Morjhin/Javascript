@@ -17,7 +17,10 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
     if (gamePlaying){
         firstDice();
         secondDice();
+
+        /* Works with 1 dice but causes bug with 2 dices
         twiceSix();
+        */
 
         if (dice1 !== 1 && dice2 !== 1) {
             roundScore += dice1 + dice2;
@@ -103,9 +106,8 @@ function removeActive(){
     document.querySelector('.player-1-panel').classList.remove('active');
 }
 
-function addActive(){
+function addActive() {
     document.querySelector('.player-0-panel').classList.add('active');
-
 }
 
 function addWinner() {
@@ -146,14 +148,14 @@ function secondDice() {
     diceDOM2.src = 'dice-' + dice2 + '.png';
 }
 
+/* Works with 1 dice but causes bug with 2 dices
 function twiceSix() {
     if (dice1 === 6 && previousDice1 === 6){
-        document.getElementById('score-0').textContent = '0'
-        nextPlayer();
-    } else if (dice2 === 6 && previousDice2 ===6){
-        document.getElementById('score-0').textContent = '0'
+        scores[activePlayer] = 0;
+        resetRoundScores();
+        document.getElementById('score-' + activePlayer).textContent = '0'
         nextPlayer();
     }
     previousDice1 = dice1;
-    previousDice2 = dice2;
 }
+*/
