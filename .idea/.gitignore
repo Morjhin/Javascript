@@ -1,11 +1,10 @@
 # Default ignored files
 /shelf/
-/Javascript.iml
-.idea
-/.gitignore
-/misc.xml
-/modelus.xml
-/vcs.xml
+Javascript.iml
+.gitignore
+misc.xml
+modelus.xml
+vcs.xml
 /workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
