@@ -75,6 +75,12 @@ let budgetController = (function () {
         }
     };
 
+    let nodeListForEach = function(list, callback) {
+        for (let i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
+
     return {
         addItem: function (type, des, val) {
             let newItem, ID;
@@ -143,14 +149,9 @@ let budgetController = (function () {
         },
 
         displayPercentage: function (percentages) {
-            let fields, nodeListForEach;
 
-            fields = document.querySelectorAll(DOMStrings.expensesPercLabel);
-            nodeListForEach = function(list, callback) {
-                for (let i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
+            let fields = document.querySelectorAll(DOMStrings.expensesPercLabel);
+
 
             nodeListForEach(fields, function (current, index) {
 
@@ -163,6 +164,22 @@ let budgetController = (function () {
                 }
 
             });
+
+        },
+
+        changeType: function() {
+            let fields;
+            fields = document.querySelectorAll(
+                DOMStrings.inputType + ',' +
+                DOMStrings.inputDescription + ',' +
+                DOMStrings.inputValue
+            );
+
+            nodeListForEach(fields, function (current) {
+                current.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
         }
 
     };
@@ -171,6 +188,26 @@ let budgetController = (function () {
 
 // UI CONTROLLER
 let UIController = (function () {
+
+    let formatNumber = function (number, type) {
+        let numberSplit, int, dec;
+
+        number = Math.abs(number);
+        number = number.toFixed(3);
+        numberSplit = number.split('.');
+
+        int = numberSplit[0];
+        if (int.length > 3 && int.length <= 6) {
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, 3);
+        }else if (int.length > 6) {
+            int = int.substr(0, int.length - 6) + ',' + int.substr(int.length - 6, 3) + ',' +
+                int.substr(int.length - 3, 3);
+
+        } // input 1234567, output 1,234567, output2 1,234,567
+
+        dec = numberSplit[1];
+        return (type === 'inc' ? '+' : '-') + ' ' + int + '.' + dec;
+    };
 
     return {
         getInput: function () {
@@ -202,7 +239,7 @@ let UIController = (function () {
             // Replace the placeholder text with some actual data
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             // Insert the HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
@@ -228,10 +265,12 @@ let UIController = (function () {
         },
 
         displayBudget: function (obj) {
+            let type;
+            obj.budget >= 0 ? type = 'inc' : type = 'exp';
 
-            document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
+            document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
+            document.querySelector(DOMStrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
             document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage;
 
             if (obj.percentage > 0) {
@@ -260,6 +299,8 @@ let controller = (function (budgetCont, UICont, DOMStr) {
             }
         });
         document.querySelector(DOMStr.container).addEventListener('click', ctrlDeleteItem);
+
+        document.querySelector(DOMStr.inputType).addEventListener('change', budgetController.changeType);
     }
 
     return {
